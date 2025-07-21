@@ -19,7 +19,7 @@ This software is being developed with necessary adaptations to meet the specific
 - **SP3-D File Reader**: Parse SP3-D (Standard Product 3 - version D) files into pandas DataFrames
 - **YUMA Almanac Reader**: Parse YUMA almanac files into pandas DataFrames with orbital parameters
 - **RINEX Navigation Reader**: Parse RINEX navigation files (versions 2.11, 3.01, 3.04, 3.05, 4.00) into pandas DataFrames
-- **RINEX Observation Reader**: Parse RINEX observation files (versions 2.10, 2.11, 3.01, 3.04, 3.05, 4.00) into pandas DataFrames
+- ⚠️ Still Testing ⚠️ **RINEX Observation Reader**: Parse RINEX observation files (versions 2.10, 2.11, 3.01, 3.04, 3.05, 4.00) into pandas DataFrames
 
 ## Usage
 
@@ -61,7 +61,7 @@ For **RINEX 3.x/4.x** (Multi-constellation):
 - `SatSystem`: Satellite system ('G'=GPS, 'R'=GLONASS, 'E'=Galileo, 'C'=BeiDou, etc.)
 - System-specific orbital and clock parameters
 
-### RINEX Observation File Support
+### ⚠️ RINEX Observation File Support
 
 The RINEX observation reader supports multiple file format versions:
 
@@ -69,7 +69,7 @@ The RINEX observation reader supports multiple file format versions:
 - **RINEX 3.01, 3.04, 3.05**: Multi-constellation observations with enhanced observation types
 - **RINEX 4.00**: Latest standard with improved multi-constellation and multi-frequency support
 
-#### RINEX Observation Output Columns
+#### ⚠️ RINEX Observation Output Columns
 
 For all versions:
 - `Epoch`: Time of observation
