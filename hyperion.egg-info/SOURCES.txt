@@ -1,0 +1,11 @@
+LICENSE
+README.md
+setup.py
+hyperion/__init__.py
+hyperion.egg-info/PKG-INFO
+hyperion.egg-info/SOURCES.txt
+hyperion.egg-info/dependency_links.txt
+hyperion.egg-info/requires.txt
+hyperion.egg-info/top_level.txt
+hyperion/functions/__init__.py
+hyperion/functions/sp3df.py
