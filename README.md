@@ -19,7 +19,7 @@ This software is being developed with necessary adaptations to meet the specific
 - **SP3-D File Reader**: Parse SP3-D (Standard Product 3 - version D) files into pandas DataFrames
 - **YUMA Almanac Reader**: Parse YUMA almanac files into pandas DataFrames with orbital parameters
 - **RINEX Navigation Reader**: Parse RINEX navigation files (versions 2.11, 3.01, 3.04, 3.05, 4.00) into pandas DataFrames
-- ⚠️ Still Testing ⚠️ **RINEX Observation Reader**: Parse RINEX observation files (versions 2.10, 2.11, 3.01, 3.04, 3.05, 4.00) into pandas DataFrames
+- ⚠️ $${\color{red}Still Testing}$$ ⚠️ **RINEX Observation Reader**: Parse RINEX observation files (versions 2.10, 2.11, 3.01, 3.04, 3.05, 4.00) into pandas DataFrames
 
 ## Usage
 
