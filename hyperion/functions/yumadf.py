@@ -173,32 +173,32 @@ def read_yuma_to_dataframe(
         - Week: GPS week number
     """
     yuma_data = YumaData.from_file(file_path)
-    
+
     if not yuma_data.satellites:
         return pd.DataFrame()  # Empty DataFrame if no satellites found
-    
+
     data = []
     for sat in yuma_data.satellites:
         row = {
             'PRN': sat.prn,
             'Health': sat.health,
-            'Eccentricity': sat.eccentricity,
-            'ToA': sat.time_of_applicability,
-            'Inclination': sat.orbital_inclination,
-            'RORA': sat.rate_of_right_ascension,
-            'SqrtA': sat.sqrt_semi_major_axis,
-            'LAN': sat.longitude_ascending_node,
-            'AoP': sat.argument_of_perigee,
-            'MeanAnomaly': sat.mean_anomaly,
-            'AF0': sat.af0,
-            'AF1': sat.af1,
+            'Eccentricity': f"{sat.eccentricity:.10e}",
+            'ToA': f"{sat.time_of_applicability:.10e}",
+            'Inclination': f"{sat.orbital_inclination:.10e}",
+            'RORA': f"{sat.rate_of_right_ascension:.10e}",
+            'SqrtA': f"{sat.sqrt_semi_major_axis:.10e}",
+            'LAN': f"{sat.longitude_ascending_node:.10e}",
+            'AoP': f"{sat.argument_of_perigee:.10e}",
+            'MeanAnomaly': f"{sat.mean_anomaly:.10e}",
+            'AF0': f"{sat.af0:.10e}",
+            'AF1': f"{sat.af1:.10e}",
             'Week': sat.week,
         }
         data.append(row)
-    
+
     df = pd.DataFrame(data)
     # Sort by PRN for consistent output
     if not df.empty:
         df = df.sort_values('PRN').reset_index(drop=True)
-    
+
     return df
