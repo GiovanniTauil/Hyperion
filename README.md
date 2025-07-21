@@ -12,7 +12,7 @@ Hyperion is a Python-based open-source toolkit for GNSS satellite orbit processi
 
 Inspired by the structure and capabilities of GROOPS (Gravity Recovery Object Oriented Programming System) by Mayer-Gürr et al. (2021), Hyperion reimplements key functionalities for satellite orbit determination and gravity-related modeling in a modular and extensible Python environment. While GROOPS is written in C++ and targets advanced geodetic applications including gravity field recovery and precise GNSS data processing, Hyperion adapts and extends these principles to support modern Python-based geodetic workflows—focusing on usability, interoperability, and integration with research pipelines.
 
-This software is being developed with necessary adaptations to meet the specific requirements of satellite orbit and clock correction workflows within GNSS PPP/PPP-RTK contexts, and will remain fully GPLv3-compliant.
+This software is being developed with necessary adaptations to meet the specific requirements of satellite orbit and clock correction workflows within GNSS PPP/PPP-RTK contexts.
 
 ## Features
 
