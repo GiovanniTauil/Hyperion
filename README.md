@@ -18,6 +18,7 @@ This software is being developed with necessary adaptations to meet the specific
 
 - **SP3-D File Reader**: Parse SP3-D (Standard Product 3 - version D) files into pandas DataFrames
 - **YUMA Almanac Reader**: Parse YUMA almanac files into pandas DataFrames with orbital parameters
+- **RINEX Navigation Reader**: Parse RINEX navigation files (versions 2.11, 3.01, 3.04, 3.05, 4.00) into pandas DataFrames
 
 ## Usage
 
@@ -29,4 +30,49 @@ sp3_df = hyperion.read_sp3_to_dataframe('path/to/sp3_file.sp3')
 
 # Read YUMA almanac file  
 yuma_df = hyperion.read_yuma_to_dataframe('path/to/almanac.alm')
+
+# Read RINEX navigation file (supports multiple versions)
+rinex_nav_df = hyperion.read_rinex_nav_to_dataframe('path/to/navigation.nav')
+```
+
+### RINEX Navigation File Support
+
+The RINEX navigation reader supports multiple file format versions:
+
+- **RINEX 2.11**: GPS navigation data with 29 orbital parameters
+- **RINEX 3.01, 3.04, 3.05**: Multi-constellation navigation (GPS, GLONASS, Galileo, BeiDou, QZSS, IRNSS, SBAS)  
+- **RINEX 4.00**: Latest standard with enhanced multi-constellation support
+
+#### RINEX Navigation Output Columns
+
+For **RINEX 2.x** (GPS):
+- `Epoch`: Time of clock correction
+- `PRN`: Satellite PRN number  
+- `SVclockBias`, `SVclockDrift`, `SVclockDriftRate`: Clock parameters
+- `IODE`, `Crs`, `DeltaN`, `M0`, etc.: Orbital parameters
+
+For **RINEX 3.x/4.x** (Multi-constellation):
+- `Epoch`: Time of clock correction
+- `PRN`: Satellite identifier (e.g., 'G01', 'R07', 'E12')
+- `SatSystem`: Satellite system ('G'=GPS, 'R'=GLONASS, 'E'=Galileo, 'C'=BeiDou, etc.)
+- System-specific orbital and clock parameters
+
+#### Example Usage
+
+```python
+import hyperion
+
+# Read RINEX 2.11 GPS navigation file
+gps_nav = hyperion.read_rinex_nav_to_dataframe('brdc0060.24n')
+print(f"GPS satellites: {gps_nav['PRN'].unique()}")
+print(f"Time range: {gps_nav['Epoch'].min()} to {gps_nav['Epoch'].max()}")
+
+# Read RINEX 3.x multi-constellation file  
+mixed_nav = hyperion.read_rinex_nav_to_dataframe('BRDC00IGS_R_20240060000_01D_MN.rnx')
+print(f"Satellite systems: {mixed_nav['SatSystem'].unique()}")
+print(f"Total satellites: {len(mixed_nav['PRN'].unique())}")
+
+# Filter by satellite system
+gps_only = mixed_nav[mixed_nav['SatSystem'] == 'G']
+galileo_only = mixed_nav[mixed_nav['SatSystem'] == 'E']
 ```
