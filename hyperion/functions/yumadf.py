@@ -5,6 +5,8 @@ import os
 import re
 import pandas as pd
 from decimal import Decimal
+import requests
+from pathlib import Path
 
 
 @dataclasses.dataclass
@@ -202,3 +204,203 @@ def read_yuma_to_dataframe(
         df = df.sort_values('PRN').reset_index(drop=True)
 
     return df
+
+
+def _construct_yuma_url(date: datetime.date) -> str:
+    """
+    Construct the NAVCEN URL for a YUMA almanac file.
+    
+    Args:
+        date: Date for the almanac file
+        
+    Returns:
+        str: URL for the YUMA almanac file
+    """
+    year = date.year
+    doy = date.timetuple().tm_yday  # Day of year (1-366)
+    return f"https://navcen.uscg.gov/sites/default/files/gps/almanac/{year}/Yuma/{doy:03d}.alm"
+
+
+def _construct_filename(date: datetime.date, save_dir: typing.Union[str, Path]) -> Path:
+    """
+    Construct the local filename for a YUMA almanac file.
+    
+    Args:
+        date: Date for the almanac file
+        save_dir: Directory to save the file
+        
+    Returns:
+        Path: Full path for the local file
+    """
+    save_dir = Path(save_dir)
+    return save_dir / f"yumaAlmanac_{date.isoformat()}.alm"
+
+
+def _download_file_from_url(url: str, filepath: Path, timeout: int = 10) -> bool:
+    """
+    Download a file from URL and save to local path.
+    
+    Args:
+        url: URL to download from
+        filepath: Local path to save the file
+        timeout: Request timeout in seconds
+        
+    Returns:
+        bool: True if download successful, False otherwise
+        
+    Raises:
+        requests.RequestException: For network-related errors
+        OSError: For file I/O errors
+    """
+    response = requests.get(url, timeout=timeout)
+    
+    # Check if the response is successful and has content
+    if response.status_code == 200 and response.content.strip():
+        with open(filepath, 'wb') as f:
+            f.write(response.content)
+        return True
+    else:
+        return False
+
+
+def _ensure_directory_exists(save_dir: typing.Union[str, Path]) -> Path:
+    """
+    Ensure the save directory exists, creating it if necessary.
+    
+    Args:
+        save_dir: Directory path to create
+        
+    Returns:
+        Path: The validated directory path
+        
+    Raises:
+        OSError: If directory cannot be created
+    """
+    save_dir = Path(save_dir)
+    save_dir.mkdir(parents=True, exist_ok=True)
+    return save_dir
+
+
+def download_yuma_almanac(date: typing.Optional[datetime.date] = None, 
+                         save_dir: typing.Union[str, Path] = ".", 
+                         raise_on_fail: bool = False, 
+                         overwrite: bool = False, 
+                         verbose: bool = True) -> typing.Optional[str]:
+    """
+    Download a YUMA almanac file from NAVCEN for a chosen date.
+    
+    If the date is empty, it will try to find today's date. If there is no file
+    for the chosen date, it will display a message and retrieve it from the 
+    previous day.
+
+    Args:
+        date: Date for which the almanac should be downloaded. If None, uses today's date.
+        save_dir: Directory to save the downloaded file (default: current directory)
+        raise_on_fail: If True, raise exception on failure instead of printing a message
+        overwrite: If True, overwrite the file if it already exists
+        verbose: If True, print status messages
+
+    Returns:
+        str or None: Path to the saved file if successful, else None
+        
+    Raises:
+        RuntimeError: If raise_on_fail is True and download fails
+    """
+    try:
+        # Use today's date if no date provided
+        if date is None:
+            date = datetime.date.today()
+            if verbose:
+                print(f" Using today's date: {date}")
+        
+        # Ensure save directory exists
+        save_dir = _ensure_directory_exists(save_dir)
+        
+        # Try to download for the requested date first
+        result = _try_download_for_date(date, save_dir, overwrite, verbose, raise_on_fail)
+        if result is not None:
+            return result
+            
+        # If failed, try previous day
+        previous_date = date - datetime.timedelta(days=1)
+        if verbose:
+            print(f" No file found for {date}, trying previous day: {previous_date}")
+            
+        result = _try_download_for_date(previous_date, save_dir, overwrite, verbose, raise_on_fail)
+        if result is not None:
+            return result
+            
+        # If both dates failed
+        msg = f"Failed to download YUMA almanac for {date} or {previous_date}"
+        if raise_on_fail:
+            raise RuntimeError(msg)
+        if verbose:
+            print(" " + msg)
+        return None
+
+    except requests.RequestException as e:
+        msg = f"Request error: {e}"
+    except OSError as e:
+        msg = f"File I/O error: {e}"
+    except Exception as e:
+        msg = f"Unexpected error: {e}"
+
+    # Handle exceptions
+    if raise_on_fail:
+        raise RuntimeError(msg)
+    if verbose:
+        print(" " + msg)
+    return None
+
+
+def _try_download_for_date(date: datetime.date, 
+                          save_dir: Path, 
+                          overwrite: bool, 
+                          verbose: bool, 
+                          raise_on_fail: bool) -> typing.Optional[str]:
+    """
+    Try to download YUMA almanac for a specific date.
+    
+    Args:
+        date: Date for the almanac
+        save_dir: Directory to save the file
+        overwrite: Whether to overwrite existing files
+        verbose: Whether to print status messages
+        raise_on_fail: Whether to raise exceptions on failure
+        
+    Returns:
+        str or None: Path to the saved file if successful, else None
+    """
+    try:
+        # Construct URL and filename
+        url = _construct_yuma_url(date)
+        filename = _construct_filename(date, save_dir)
+
+        # Check if file already exists
+        if filename.exists() and not overwrite:
+            if verbose:
+                print(f" File already exists: {filename}")
+            return str(filename)
+
+        # Try to download the file
+        if _download_file_from_url(url, filename):
+            if verbose:
+                print(f" Downloaded: {filename}")
+            return str(filename)
+        else:
+            if verbose:
+                print(f" Failed to download file from: {url}")
+            return None
+
+    except requests.RequestException as e:
+        if verbose:
+            print(f" Request error for {date}: {e}")
+        return None
+    except OSError as e:
+        if verbose:
+            print(f" File I/O error for {date}: {e}")
+        return None
+    except Exception as e:
+        if verbose:
+            print(f" Unexpected error for {date}: {e}")
+        return None
