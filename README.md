@@ -1,7 +1,9 @@
-# Hyperion
 <div align="center">
   <img src="hyperion-03.png" alt="Logo" width="1023">
 </div>
+
+# Hyperion
+
 (EN) *Hyperion refers to the Greek titan linked to celestial motion, symbolizing the precision and transformation of orbits.*
 
 (DE) *Hyperion bezieht sich auf den griechischen Titanen des Himmelslaufs und symbolisiert die Präzision und Transformation von Umlaufbahnen.*
