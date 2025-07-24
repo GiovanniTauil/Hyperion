@@ -25,7 +25,7 @@ This software is being developed with necessary adaptations to meet the specific
 - **RINEX Navigation Reader**: Parse RINEX navigation files (versions 2.11, 3.01, 3.04, 3.05, 4.00) into pandas DataFrames
 - **RINEX Clock Reader**: Parse RINEX Clock files (versions 3.0, 3.04) into pandas DataFrames with satellite and receiver clock data
 - **RINEX Observation Reader**: Parse RINEX observation files (versions 2.10, 2.11, 3.01, 3.04, 3.05, 4.00) into pandas DataFrames
-- **IONEX File Reader**: Parse IONEX (IONosphere Exchange format) files version 1.0 into pandas DataFrames with ionospheric map data
+- ⚠️(Still in Test)⚠️ **IONEX File Reader**: Parse IONEX (IONosphere Exchange format) files version 1.0 into pandas DataFrames with ionospheric map data
 
 ## Usage
 
