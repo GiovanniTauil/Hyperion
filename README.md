@@ -23,6 +23,7 @@ This software is being developed with necessary adaptations to meet the specific
 - **SP3-D File Reader**: Parse SP3-D (Standard Product 3 - version D) files into pandas DataFrames
 - **YUMA Almanac Reader**: Parse YUMA almanac files into pandas DataFrames with orbital parameters
 - **RINEX Navigation Reader**: Parse RINEX navigation files (versions 2.11, 3.01, 3.04, 3.05, 4.00) into pandas DataFrames
+- **RINEX Clock Reader**: Parse RINEX Clock files (versions 3.0, 3.04) into pandas DataFrames with satellite and receiver clock data
 - ⚠️ $${\color{red}Still Testing}$$ ⚠️ **RINEX Observation Reader**: Parse RINEX observation files (versions 2.10, 2.11, 3.01, 3.04, 3.05, 4.00) into pandas DataFrames
 
 ## Usage
@@ -38,6 +39,9 @@ yuma_df = hyperion.read_yuma_to_dataframe('path/to/almanac.alm')
 
 # Read RINEX navigation file (supports multiple versions)
 rinex_nav_df = hyperion.read_rinex_nav_to_dataframe('path/to/navigation.nav')
+
+# Read RINEX Clock file (supports versions 3.0 and 3.04)
+rinex_clk_df, clk_header = hyperion.read_rinex_clock_to_dataframe('path/to/clock.clk')
 
 # Read RINEX observation file (supports multiple versions)
 rinex_obs_df = hyperion.read_rinex_obs_to_dataframe('path/to/observation.obs')
@@ -64,6 +68,42 @@ For **RINEX 3.x/4.x** (Multi-constellation):
 - `PRN`: Satellite identifier (e.g., 'G01', 'R07', 'E12')
 - `SatSystem`: Satellite system ('G'=GPS, 'R'=GLONASS, 'E'=Galileo, 'C'=BeiDou, etc.)
 - System-specific orbital and clock parameters
+
+### RINEX Clock File Support
+
+The RINEX Clock reader supports RINEX Clock file format versions 3.0 and 3.04. RINEX Clock files contain satellite and receiver clock offset data organized by epoch and record type.
+
+#### Supported Record Types
+
+- **AS**: Satellite clock data
+- **AR**: Receiver clock data
+- **CR**: Receiver clock data (alternative format)
+- **DR**: Receiver clock rate data
+
+#### RINEX Clock Output
+
+The function returns a tuple `(DataFrame, header_dict)`:
+
+**DataFrame columns**:
+- `Type`: Record type ('AS', 'AR', 'CR', 'DR')
+- `ID`: Satellite PRN (e.g., 'G01') or receiver/station identifier (e.g., 'ALGO')
+- `Epoch`: Time of clock measurement (datetime object)
+- `Values`: List of clock values (bias, rate, acceleration in seconds)
+
+**Header dictionary**: Contains file metadata including version, time system, analysis center, etc.
+
+#### Optional Value Expansion
+
+Use `expand_clock_values()` to expand the 'Values' column into separate columns when all records have the same number of values:
+
+```python
+# Basic usage
+clk_df, header = hyperion.read_rinex_clock_to_dataframe('clock_file.clk')
+
+# Expand values into separate columns (when uniform)
+clk_expanded = hyperion.expand_clock_values(clk_df)
+# Results in columns: Clock_Bias(s), Clock_Rate(s/s), Clock_Acceleration(s/s²)
+```
 
 ### ⚠️ RINEX Observation File Support
 
@@ -102,6 +142,20 @@ print(f"Total satellites: {len(mixed_nav['PRN'].unique())}")
 # Filter by satellite system
 gps_only = mixed_nav[mixed_nav['SatSystem'] == 'G']
 galileo_only = mixed_nav[mixed_nav['SatSystem'] == 'E']
+
+# Read RINEX Clock file
+clk_df, clk_header = hyperion.read_rinex_clock_to_dataframe('igs0060.clk')
+print(f"Clock record types: {clk_df['Type'].unique()}")
+print(f"Clock data for satellites/stations: {clk_df['ID'].unique()}")
+
+# Expand clock values for uniform records
+clk_uniform = clk_df[clk_df['Values'].apply(len) == 2]  # Filter records with 2 values
+clk_expanded = hyperion.expand_clock_values(clk_uniform)
+print(f"Clock bias range: {clk_expanded['Clock_Bias(s)'].min():.2e} to {clk_expanded['Clock_Bias(s)'].max():.2e}")
+
+# Filter by record type
+satellite_clocks = clk_df[clk_df['Type'] == 'AS']  # Satellite clocks
+receiver_clocks = clk_df[clk_df['Type'] == 'AR']   # Receiver clocks
 
 # Read RINEX 2.11 observation file
 obs_2x = hyperion.read_rinex_obs_to_dataframe('obs0060.24o')
