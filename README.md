@@ -24,7 +24,7 @@ This software is being developed with necessary adaptations to meet the specific
 - **YUMA Almanac Reader**: Parse YUMA almanac files into pandas DataFrames with orbital parameters
 - **RINEX Navigation Reader**: Parse RINEX navigation files (versions 2.11, 3.01, 3.04, 3.05, 4.00) into pandas DataFrames
 - **RINEX Clock Reader**: Parse RINEX Clock files (versions 3.0, 3.04) into pandas DataFrames with satellite and receiver clock data
-- ⚠️ $${\color{red}Still Testing}$$ ⚠️ **RINEX Observation Reader**: Parse RINEX observation files (versions 2.10, 2.11, 3.01, 3.04, 3.05, 4.00) into pandas DataFrames
+- **RINEX Observation Reader**: Parse RINEX observation files (versions 2.10, 2.11, 3.01, 3.04, 3.05, 4.00) into pandas DataFrames
 - **IONEX File Reader**: Parse IONEX (IONosphere Exchange format) files version 1.0 into pandas DataFrames with ionospheric map data
 
 ## Usage
@@ -111,7 +111,7 @@ clk_expanded = hyperion.expand_clock_values(clk_df)
 # Results in columns: Clock_Bias(s), Clock_Rate(s/s), Clock_Acceleration(s/s²)
 ```
 
-### ⚠️ RINEX Observation File Support
+### RINEX Observation File Support
 
 The RINEX observation reader supports multiple file format versions:
 
@@ -119,7 +119,7 @@ The RINEX observation reader supports multiple file format versions:
 - **RINEX 3.01, 3.04, 3.05**: Multi-constellation observations with enhanced observation types
 - **RINEX 4.00**: Latest standard with improved multi-constellation and multi-frequency support
 
-#### ⚠️ RINEX Observation Output Columns
+#### RINEX Observation Output Columns
 
 For all versions:
 - `Epoch`: Time of observation
