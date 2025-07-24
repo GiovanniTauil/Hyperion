@@ -24,6 +24,7 @@ This software is being developed with necessary adaptations to meet the specific
 - **YUMA Almanac Reader**: Parse YUMA almanac files into pandas DataFrames with orbital parameters
 - **RINEX Navigation Reader**: Parse RINEX navigation files (versions 2.11, 3.01, 3.04, 3.05, 4.00) into pandas DataFrames
 - ⚠️ $${\color{red}Still Testing}$$ ⚠️ **RINEX Observation Reader**: Parse RINEX observation files (versions 2.10, 2.11, 3.01, 3.04, 3.05, 4.00) into pandas DataFrames
+- **IONEX File Reader**: Parse IONEX (IONosphere Exchange format) files version 1.0 into pandas DataFrames with ionospheric map data
 
 ## Usage
 
@@ -41,6 +42,11 @@ rinex_nav_df = hyperion.read_rinex_nav_to_dataframe('path/to/navigation.nav')
 
 # Read RINEX observation file (supports multiple versions)
 rinex_obs_df = hyperion.read_rinex_obs_to_dataframe('path/to/observation.obs')
+
+# Read IONEX file
+ionex_result = hyperion.read_ionex_to_dataframe('path/to/ionex_file.ion')
+ionex_header = ionex_result['header']  # Metadata dictionary
+ionex_data = ionex_result['data']      # DataFrame with TEC/RMS/HEIGHT data
 ```
 
 ### RINEX Navigation File Support
@@ -121,4 +127,62 @@ galileo_carrier = obs_3x[(obs_3x['SatSystem'] == 'E') & (obs_3x['ObsType'].str.s
 data_availability = obs_3x.groupby(['PRN', 'ObsType'])['Value'].count().reset_index()
 print("Data availability per satellite and observation type:")
 print(data_availability.head(10))
+```
+
+### IONEX File Support
+
+The IONEX file reader supports IONEX format version 1.0 for ionospheric data:
+
+- **IONEX 1.0**: IONosphere Exchange format with TEC, RMS, and HEIGHT maps
+- **2D/3D Maps**: Supports both 2D (single height) and 3D (multiple height layers) ionospheric maps
+- **Multi-Map Types**: Handles TEC (Total Electron Content), RMS (Root Mean Square), and HEIGHT maps
+- **Grid Data**: Extracts latitude, longitude, and height grid parameters from header
+- **Auxiliary Data**: Parses auxiliary data blocks like Differential Code Biases (DCBs)
+
+#### IONEX Output Format
+
+The IONEX reader returns a dictionary with two keys:
+
+- **`header`**: Dictionary containing metadata such as:
+  - `version`: IONEX version
+  - `map_dimension`: 2 or 3 for 2D/3D maps
+  - Grid parameters: `lat1`, `lat2`, `dlat`, `lon1`, `lon2`, `dlon`, `hgt1`, `hgt2`, `dhgt`
+  - `exponent`: Default scaling exponent
+  - Other metadata: program, description, epochs, etc.
+
+- **`data`**: pandas DataFrame with columns:
+  - `Type`: Map type ('TEC', 'RMS', 'HEIGHT')
+  - `Epoch`: Time of observation (datetime)
+  - `Height`: Height in km
+  - `Lat`: Latitude in degrees
+  - `Lon`: Longitude in degrees  
+  - `Value`: Scaled value (TEC in TECU, RMS in TECU, HEIGHT in km)
+
+#### Example Usage
+
+```python
+import hyperion
+
+# Read IONEX file
+ionex_result = hyperion.read_ionex_to_dataframe('ionex_file.ion')
+
+# Access header information
+header = ionex_result['header']
+print(f"Map dimension: {header['map_dimension']}")
+print(f"Grid: {header['lat1']}° to {header['lat2']}° (Δ{header['dlat']}°)")
+print(f"      {header['lon1']}° to {header['lon2']}° (Δ{header['dlon']}°)")
+
+# Access ionospheric data
+data = ionex_result['data']
+print(f"Total observations: {len(data)}")
+print(f"Map types: {data['Type'].unique()}")
+print(f"Time range: {data['Epoch'].min()} to {data['Epoch'].max()}")
+
+# Filter TEC data for specific region
+tec_data = data[data['Type'] == 'TEC']
+regional_tec = tec_data[(tec_data['Lat'] >= 30) & (tec_data['Lat'] <= 60) & 
+                        (tec_data['Lon'] >= -120) & (tec_data['Lon'] <= -60)]
+
+# Calculate statistics
+print(f"Regional TEC range: {regional_tec['Value'].min():.2f} to {regional_tec['Value'].max():.2f} TECU")
 ```
