@@ -1,0 +1,10 @@
+     3.04           CLOCK DATA                              RINEX VERSION / TYPE
+IGS                                                     PGM / RUN BY / DATE 
+Final combined solution                                 COMMENT             
+     2                                                  # OF SATELLITES     
+G01                                                     SATELLITE LIST      
+G02                                                     SATELLITE LIST      
+                                                        END OF HEADER       
+AS G01 2023  1  1  0  0  0.000000  2   1.234567890123D-07   1.234567890123D-14
+AS G02 2023  1  1  0  0  0.000000  1   2.345678901234D-07
+AR ALGO2023  1  1  0  0  0.000000  2   3.456789012345D-08   3.456789012345D-15

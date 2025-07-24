@@ -61,6 +61,9 @@ def parse_data(lines: list[str], start_index: int) -> list[dict]:
     """
     Parse the data records from RINEX Clock file into a list of dictionaries.
     
+    RINEX Clock format is space-delimited but may have varying spacing.
+    This function handles both fixed-width and space-delimited formats.
+    
     Args:
         lines: List of lines from the RINEX Clock file
         start_index: Index to start parsing data from
@@ -82,24 +85,31 @@ def parse_data(lines: list[str], start_index: int) -> list[dict]:
         # Check if this is the start of a new record (first 2 chars are alphabetic)
         if len(line) >= 2 and line[0:2].isalpha():
             try:
-                # Parse record type and ID more flexibly
-                parts = line.split()
-                if len(parts) < 8:  # Need at least 8 parts for a valid record
+                # Parse record using regex to handle varying spacing
+                # RINEX Clock format: TYPE ID YYYY MM DD HH MM SS.SSSSSS N_VAL DATA_VALUES...
+                import re
+                
+                # Match the clock record pattern with flexible spacing
+                # More robust pattern that handles station names with numbers
+                # Look for the pattern: TYPE STATION YYYY MM DD HH MM SS.SS N_VAL DATA...
+                # Use non-greedy matching and specific constraints
+                pattern = r'^(\w{2})\s+(\S+?)\s+(\d{4})\s+(\d{1,2})\s+(\d{1,2})\s+(\d{1,2})\s+(\d{1,2})\s+(\d+\.?\d*)\s+(\d+)(?:\s+(.*))?'
+                match = re.match(pattern, line)
+                
+                if not match:
+                    logging.warning(f"Could not parse clock record at line {i}: {line[:50]}...")
                     continue
-                    
-                record_type = parts[0]  # e.g., 'AS', 'AR'
-                record_id = parts[1]    # e.g., 'G01', 'ALGO'
                 
-                # Parse date/time fields
-                year = int(parts[2])
-                month = int(parts[3])
-                day = int(parts[4])
-                hour = int(parts[5])
-                minute = int(parts[6])
-                second = float(parts[7])
-                
-                # Number of data values expected
-                num_values = int(parts[8])
+                record_type = match.group(1)  # e.g., 'AS', 'AR'
+                record_id = match.group(2)    # e.g., 'G01', 'ALGO'
+                year = int(match.group(3))
+                month = int(match.group(4))
+                day = int(match.group(5))
+                hour = int(match.group(6))
+                minute = int(match.group(7))
+                second = float(match.group(8))
+                num_values = int(match.group(9))
+                values_str = match.group(10) if match.group(10) else ""  # Remaining values string
                 
                 # Create datetime object
                 epoch = datetime(
@@ -108,27 +118,35 @@ def parse_data(lines: list[str], start_index: int) -> list[dict]:
                     int((second - int(second)) * 1_000_000)
                 )
                 
-                # Collect values starting from this line
+                # Parse data values from the remaining string and continuation lines
                 values = []
                 
-                # Parse remaining values from the first line
-                for j in range(9, len(parts)):
-                    if len(values) < num_values:
-                        value_str = parts[j].replace('D', 'e').replace('E', 'e')
-                        values.append(float(value_str))
+                # Parse values from the current line
+                if values_str:
+                    value_parts = values_str.split()
+                    for part in value_parts:
+                        if len(values) < num_values and part.strip():
+                            value_str = part.replace('D', 'e').replace('E', 'e')
+                            try:
+                                values.append(float(value_str))
+                            except ValueError:
+                                logging.warning(f"Could not parse value '{part}' at line {i}")
                 
-                # Collect values from continuation lines
+                # Collect values from continuation lines if needed
                 while len(values) < num_values and i < len(lines):
                     next_line = lines[i].rstrip('\n')
                     
                     # Check if this is a continuation line (not starting with alphabetic chars)
                     if next_line.strip() and (len(next_line) < 2 or not next_line[0:2].isalpha()):
-                        # Parse values from continuation line using split
+                        # Parse values from continuation line
                         cont_parts = next_line.split()
                         for part in cont_parts:
-                            if len(values) < num_values:
+                            if len(values) < num_values and part.strip():
                                 value_str = part.replace('D', 'e').replace('E', 'e')
-                                values.append(float(value_str))
+                                try:
+                                    values.append(float(value_str))
+                                except ValueError:
+                                    logging.warning(f"Could not parse continuation value '{part}' at line {i}")
                         i += 1
                     else:
                         break

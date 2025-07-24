@@ -1,0 +1,9 @@
+     3.04           CLOCK DATA                              RINEX VERSION / TYPE
+GLAB                                                    PGM / RUN BY / DATE 
+CLOCK FILE                                              COMMENT             
+     2                                                  # OF SATELLITES     
+G01                                                     SATELLITE LIST      
+G02                                                     SATELLITE LIST      
+                                                        END OF HEADER       
+AS G01 2023  1  1  0  0  0.0000000  2   1.234567890123E-07   1.234567890123E-14
+AS G02 2023  1  1  0  0  0.0000000  2   2.345678901234E-07   2.345678901234E-14
