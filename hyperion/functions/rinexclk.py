@@ -1,13 +1,3 @@
-"""
-RINEX Clock File Reader
-
-This module provides functionality to read RINEX Clock files (versions 3.0 and 3.04)
-and convert them to pandas DataFrames. RINEX Clock files contain satellite and receiver
-clock offset data organized by epoch and type.
-
-Author: Based on attempted solution and extended for Hyperion framework
-"""
-
 import os
 import re
 import logging
@@ -222,7 +212,8 @@ def read_rinex_clock_to_dataframe(
             raise ValueError("Invalid RINEX Clock file: missing version/type header")
         
         version_line = header['RINEX VERSION / TYPE']
-        if 'CLOCK' not in version_line.upper():
+        version_parts = re.split(r'\s+', version_line.strip())
+        if len(version_parts) < 2 or version_parts[1] != 'C':
             raise ValueError(f"Not a RINEX Clock file: {version_line}")
         
         # Parse data records
