@@ -1,0 +1,18 @@
+Metadata-Version: 2.4
+Name: hyperion
+Version: 1.0.0
+Summary: Python-based open-source toolkit for GNSS satellite orbit processing and I/O parsing.
+Author: Antigravity
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.8
+Requires-Dist: pandas
+Requires-Dist: numpy
+Requires-Dist: tables
+Requires-Dist: hatanaka
+Dynamic: author
+Dynamic: classifier
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary

@@ -1,0 +1,14 @@
+******** Week 0585 almanac for PRN-01 ********
+ID:                         01
+Health:                     000
+Eccentricity:               0.0076217651
+Time of Applicability(s):  503808.0000
+Orbital Inclination(rad):   0.94939232
+Rate of Right Ascen(r/s):  -8.1578322E-009
+SQRT(A)  (m 1/2):           5153.6406
+Right Ascen at Week(rad):   1.1444101
+Argument of Perigee(rad):   1.5840902
+Mean Anom(rad):             0.063548088
+Af0(s):                     0.00000000
+Af1(s/s):                   0.00000000
+week:                        585
