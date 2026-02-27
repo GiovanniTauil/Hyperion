@@ -38,4 +38,4 @@ Thumbs.db
 
 # Test files
 test_*.clk
-*.tmp
+*.tmpdata_test/
