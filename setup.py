@@ -9,7 +9,7 @@ packages = ['hyperion'] + [f'hyperion.{p}' for p in sub_packages if not p.starts
 
 setup(
     name="hyperion",
-    version="1.0.0",
+    version="1.0.1",
     description="Python-based open-source toolkit for GNSS satellite orbit processing and I/O parsing.",
     author="Antigravity",
     packages=packages,
