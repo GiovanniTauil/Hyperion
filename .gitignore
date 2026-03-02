@@ -39,3 +39,4 @@ Thumbs.db
 # Test files
 test_*.clk
 data_test/
+hyperion.egg-info/
