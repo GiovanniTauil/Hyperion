@@ -75,3 +75,17 @@ output_file = hyperion.load_rinex_obs(
 
 print(f"Dataset securely saved to: {output_file}")
 ```
+
+## Latest Updates (v1.0.5)
+
+### Interpolation Methods
+The library now supports two interpolation methods for upsampling time-series data:
+
+- **Polynomial Interpolation** (method='polynomial'): Uses Lagrange polynomial interpolation for smoother curves
+- **Linear Interpolation** (method='linear'): Simple linear interpolation between points, faster but less smooth
+
+Both methods:
+- Maintain NaN values (don't interpolate through missing data)
+- Support various time units (seconds, minutes, hours)
+- Work with both DataFrame and HDF5 inputs/outputs
+- Only allow upsampling (smaller time intervals)

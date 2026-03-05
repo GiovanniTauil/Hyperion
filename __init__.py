@@ -1,4 +1,6 @@
-__version__ = '1.0.1'
+__version__ = '1.0.5'
+
+from .data_model import interpolation
 
 from .io import (
     load_sp3,
@@ -25,5 +27,6 @@ __all__ = [
     'load_sinex',
     'load_ionex',
     'load_rinex_met',
-    'load_rinex_doris'
+    'load_rinex_doris',
+    'interpolation'
 ]
