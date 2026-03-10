@@ -2,7 +2,7 @@
   <img src="hyperion-03.png" alt="Logo" width="1023">
 </div>
 
-# Hyperion - v1.0.0
+# Hyperion - v1.0.5
 
 (EN) *Hyperion refers to the Greek titan linked to celestial motion, symbolizing the precision and transformation of orbits.*
 
