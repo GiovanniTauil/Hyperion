@@ -12,11 +12,19 @@
 
 (ES) *Hyperion alude al titán de la mitología griega asociado al movimiento celestial, simbolizando la precisión y transformación de órbitas.*
 
-Hyperion is a Python-based open-source toolkit for GNSS satellite orbit processing, released under the MIT license. It is designed to facilitate the transformation and analysis of GNSS orbit data—focusing on the conversion of SP3-D and YUMA almanac files, as well as orbital state computations and derived parameters.
+Hyperion is an open-source Python library designed for comprehensive GNSS (Global Navigation Satellite Systems) data processing, analysis, and interoperability. Licensed under the MIT License, it provides a modular environment for handling complex geodetic workflows, ranging from raw data parsing to high-precision orbital computations.
 
-Inspired by the structure and capabilities of GROOPS (Gravity Recovery Object Oriented Programming System) by Mayer-Gürr et al. (2021), Hyperion reimplements key functionalities for satellite orbit determination and gravity-related modeling in a modular and extensible Python environment. While GROOPS is written in C++ and targets advanced geodetic applications including gravity field recovery and precise GNSS data processing, Hyperion adapts and extends these principles to support modern Python-based geodetic workflows—focusing on usability, interoperability, and integration with research pipelines.
+While initially inspired by the architectural principles of GROOPS (Mayer-Gürr et al., 2021), Hyperion has evolved into a versatile and independent toolkit. It bridges the gap between low-level orbital mechanics and modern Python-based research pipelines, offering specialized tools for:
 
-This software is being developed with necessary adaptations to meet the specific requirements of satellite orbit and clock correction workflows within GNSS PPP/PPP-RTK contexts.
+   - Multi-Format I/O: Seamless parsing and conversion of industry-standard formats, including SP3-D, YUMA/SEM almanacs, and navigation messages.
+
+   - Orbital Dynamics: Precise computation of satellite states, clock corrections, and derived orbital parameters.
+
+   - Positioning Context: Tailored for the rigorous demands of PPP (Precise Point Positioning) and PPP-RTK workflows, ensuring high-fidelity orbit and clock integration.
+
+   - Extensibility: Built on a Pythonic foundation (NumPy, Pandas) to ensure ease of use, rapid prototyping, and integration with machine learning or atmospheric research tools.
+
+Hyperion adapts established geodetic principles into a user-friendly, extensible framework, making advanced satellite orbit determination and GNSS processing accessible to the broader scientific community
 
 ## Features
 
